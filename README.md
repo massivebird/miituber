@@ -2,11 +2,13 @@
 
 <img width="1280" height="310" alt="New Project (1)" src="https://github.com/user-attachments/assets/047e1588-3a1e-4478-ae4e-c9119f5ce943" />
 
-NOTE(s):
-- Mii Creator (mii.nxw.pw) custom features do not work with MiiTuber.
-- macOS downloads are unsigned and not notarized because the project does not currently have an Apple Developer account. See the macOS instructions below for the one-time launch step.
 
-Turn your **Mii** into a VTuber. MiiTuber shows your Mii as a live 3D avatar that copies your head movements from your webcam and moves its mouth when you talk, ready to drop into OBS with a transparent background.
+
+
+> - Mii Creator (mii.nxw.pw) custom features do not work with MiiTuber.
+> - macOS downloads unsigned, see instructions below
+
+Miituber provides an easy, free, open source way to turn your Mii files into a VTuber
 
 Everything runs on your own PC. No accounts, no uploads, nothing sent anywhere.
 
