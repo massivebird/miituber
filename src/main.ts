@@ -415,6 +415,12 @@ const headRotationOffsetRollInput = document.querySelector<HTMLOutputElement>(
 const headRotationOffsetRollValueEl = document.querySelector<HTMLOutputElement>(
   "#head-rot-roll-offset-value",
 );
+const headRotationOffsetYawInput = document.querySelector<HTMLOutputElement>(
+  "#head-rot-yaw-offset",
+);
+const headRotationOffsetYawValueEl = document.querySelector<HTMLOutputElement>(
+  "#head-rot-yaw-offset-value",
+);
 const showDebugInfoInput =
   document.querySelector<HTMLInputElement>("#show-debug-info");
 const advancedDebugInfoEl = document.querySelector<HTMLElement>(
@@ -1410,7 +1416,7 @@ function setAvatarPose(expressionIndex: number, headRotation: HeadRotation) {
   avatarScene.setHeadRotation({
     pitch: headRotation.pitch + tuningProfile.headRotationOffset.pitch,
     roll: headRotation.roll + tuningProfile.headRotationOffset.roll,
-    yaw: headRotation.yaw
+    yaw: headRotation.yaw + tuningProfile.headRotationOffset.yaw
   });
   publishCleanOutputPose();
 }
@@ -1865,6 +1871,14 @@ function populateTuningControls() {
       setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
     }
   });
+  headRotationOffsetYawInput?.addEventListener("input", () => {
+    tuningProfile.headRotationOffset.yaw = parseInt(headRotationOffsetYawInput.value);
+    applyTuningProfile(tuningProfile);
+    
+    if (!tracking) {
+      setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
+    }
+  });
   showDebugInfoInput?.addEventListener("change", () => {
     setDebugInfoVisible(showDebugInfoInput.checked);
     writeShowDebugInfoPreference(showDebugInfoInput.checked);
@@ -2070,6 +2084,12 @@ function renderTuningControls() {
   }
   if (headRotationOffsetRollValueEl) {
     headRotationOffsetRollValueEl.textContent = String(tuningProfile.headRotationOffset.roll);
+  }
+  if (headRotationOffsetYawInput) {
+    headRotationOffsetYawInput.value = String(tuningProfile.headRotationOffset.yaw)
+  }
+  if (headRotationOffsetYawValueEl) {
+    headRotationOffsetYawValueEl.textContent = String(tuningProfile.headRotationOffset.yaw);
   }
 
   micMouthTuningControlEl

@@ -210,7 +210,14 @@ export function normalizeTuningProfile(profile: Partial<TuningProfile>): TuningP
         -40,
         40
       ),
-      yaw: 0,
+      yaw: clamp(
+        finiteOrDefault(
+          profile.headRotationOffset?.yaw,
+          fallback.headRotationOffset.yaw
+        ),
+        -40,
+        40
+      ),
     },
     minimumHoldMs: Math.max(0, profile.minimumHoldMs ?? fallback.minimumHoldMs),
     calibration: normalizeCalibration(profile.calibration),
