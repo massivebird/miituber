@@ -2077,19 +2077,19 @@ function renderTuningControls() {
     headRotationOffsetPitchInput.value = String(tuningProfile.headRotationOffset.pitch)
   }
   if (headRotationOffsetPitchValueEl) {
-    headRotationOffsetPitchValueEl.textContent = String(tuningProfile.headRotationOffset.pitch);
+    headRotationOffsetPitchValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.pitch);
   }
   if (headRotationOffsetRollInput) {
     headRotationOffsetRollInput.value = String(tuningProfile.headRotationOffset.roll)
   }
   if (headRotationOffsetRollValueEl) {
-    headRotationOffsetRollValueEl.textContent = String(tuningProfile.headRotationOffset.roll);
+    headRotationOffsetRollValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.roll);
   }
   if (headRotationOffsetYawInput) {
     headRotationOffsetYawInput.value = String(tuningProfile.headRotationOffset.yaw)
   }
   if (headRotationOffsetYawValueEl) {
-    headRotationOffsetYawValueEl.textContent = String(tuningProfile.headRotationOffset.yaw);
+    headRotationOffsetYawValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.yaw);
   }
 
   micMouthTuningControlEl
@@ -3387,6 +3387,11 @@ function saveImportedAvatar() {
   } catch (error) {
     setImportStatus(userFacingError("AVATAR_SAVE_FAILED", error), "error");
   }
+}
+
+/// Format a head rotation offset value (pitch, yaw, roll) for display.
+function formatHeadRotationValue(value: number): string {
+  return value >= 0 ? `+${value}` : String(value);
 }
 
 async function selectAvatar(id: string) {
