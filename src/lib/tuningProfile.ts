@@ -202,7 +202,14 @@ export function normalizeTuningProfile(profile: Partial<TuningProfile>): TuningP
         -40,
         40
       ),
-      roll: 0,
+      roll: clamp(
+        finiteOrDefault(
+          profile.headRotationOffset?.roll,
+          fallback.headRotationOffset.roll
+        ),
+        -40,
+        40
+      ),
       yaw: 0,
     },
     minimumHoldMs: Math.max(0, profile.minimumHoldMs ?? fallback.minimumHoldMs),

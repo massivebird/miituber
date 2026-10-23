@@ -403,11 +403,17 @@ const oneEuroSmoothingInput = document.querySelector<HTMLInputElement>(
 const oneEuroSmoothingValueEl = document.querySelector<HTMLOutputElement>(
   "#one-euro-smoothing-value",
 );
-const headRotationOffsetXInput = document.querySelector<HTMLOutputElement>(
-  "#head-rotation-x-offset",
+const headRotationOffsetPitchInput = document.querySelector<HTMLOutputElement>(
+  "#head-rot-pitch-offset",
 );
-const headRotationOffsetXValueEl = document.querySelector<HTMLOutputElement>(
-  "#head-rotation-x-offset-value",
+const headRotationOffsetPitchValueEl = document.querySelector<HTMLOutputElement>(
+  "#head-rot-pitch-offset-value",
+);
+const headRotationOffsetRollInput = document.querySelector<HTMLOutputElement>(
+  "#head-rot-roll-offset",
+);
+const headRotationOffsetRollValueEl = document.querySelector<HTMLOutputElement>(
+  "#head-rot-roll-offset-value",
 );
 const showDebugInfoInput =
   document.querySelector<HTMLInputElement>("#show-debug-info");
@@ -1403,7 +1409,7 @@ function setAvatarPose(expressionIndex: number, headRotation: HeadRotation) {
   avatarScene.setExpression(displayedExpressionIndex);
   avatarScene.setHeadRotation({
     pitch: headRotation.pitch + tuningProfile.headRotationOffset.pitch,
-    roll: headRotation.roll,
+    roll: headRotation.roll + tuningProfile.headRotationOffset.roll,
     yaw: headRotation.yaw
   });
   publishCleanOutputPose();
@@ -1843,8 +1849,16 @@ function populateTuningControls() {
     );
     applyTuningProfile(tuningProfile);
   });
-  headRotationOffsetXInput?.addEventListener("input", () => {
-    tuningProfile.headRotationOffset.pitch = parseInt(headRotationOffsetXInput.value);
+  headRotationOffsetPitchInput?.addEventListener("input", () => {
+    tuningProfile.headRotationOffset.pitch = parseInt(headRotationOffsetPitchInput.value);
+    applyTuningProfile(tuningProfile);
+    
+    if (!tracking) {
+      setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
+    }
+  });
+  headRotationOffsetRollInput?.addEventListener("input", () => {
+    tuningProfile.headRotationOffset.roll = parseInt(headRotationOffsetRollInput.value);
     applyTuningProfile(tuningProfile);
     
     if (!tracking) {
@@ -2044,11 +2058,18 @@ function renderTuningControls() {
   if (minimumHoldMsInput) {
     minimumHoldMsInput.value = String(tuningProfile.minimumHoldMs);
   }
-  if (headRotationOffsetXInput) {
-    headRotationOffsetXInput.value = String(tuningProfile.headRotationOffset.pitch)
+
+  if (headRotationOffsetPitchInput) {
+    headRotationOffsetPitchInput.value = String(tuningProfile.headRotationOffset.pitch)
   }
-  if (headRotationOffsetXValueEl) {
-    headRotationOffsetXValueEl.textContent = String(tuningProfile.headRotationOffset.pitch);
+  if (headRotationOffsetPitchValueEl) {
+    headRotationOffsetPitchValueEl.textContent = String(tuningProfile.headRotationOffset.pitch);
+  }
+  if (headRotationOffsetRollInput) {
+    headRotationOffsetRollInput.value = String(tuningProfile.headRotationOffset.roll)
+  }
+  if (headRotationOffsetRollValueEl) {
+    headRotationOffsetRollValueEl.textContent = String(tuningProfile.headRotationOffset.roll);
   }
 
   micMouthTuningControlEl
@@ -2102,14 +2123,6 @@ function easeHeadTowardNeutral(now: number) {
     yaw: yaw * keep,
     roll: roll * keep,
   });
-}
-
-function headRotationSum(a: HeadRotation, b: HeadRotation): HeadRotation {
-  return {
-    pitch: a.pitch + b.pitch,
-    yaw: a.yaw + b.yaw,
-    roll: a.roll + b.roll,
-  }
 }
 
 function handleTrackingFrame({ results, trackingFps, detectMs }: FaceTrackerFrame) {
