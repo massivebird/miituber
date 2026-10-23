@@ -1855,30 +1855,30 @@ function populateTuningControls() {
     );
     applyTuningProfile(tuningProfile);
   });
-  headRotationOffsetPitchInput?.addEventListener("input", () => {
-    tuningProfile.headRotationOffset.pitch = parseInt(headRotationOffsetPitchInput.value);
-    applyTuningProfile(tuningProfile);
-    
+
+  // Manually update the 3D avatar's pose, unless tracking is already updating it.
+  const manuallyUpdatePose = () => {
     if (!tracking) {
       setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
     }
+  }
+
+  headRotationOffsetPitchInput?.addEventListener("input", () => {
+    tuningProfile.headRotationOffset.pitch = parseInt(headRotationOffsetPitchInput.value);
+    applyTuningProfile(tuningProfile);
+    manuallyUpdatePose();
   });
   headRotationOffsetRollInput?.addEventListener("input", () => {
     tuningProfile.headRotationOffset.roll = parseInt(headRotationOffsetRollInput.value);
     applyTuningProfile(tuningProfile);
-    
-    if (!tracking) {
-      setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
-    }
+    manuallyUpdatePose();
   });
   headRotationOffsetYawInput?.addEventListener("input", () => {
     tuningProfile.headRotationOffset.yaw = parseInt(headRotationOffsetYawInput.value);
     applyTuningProfile(tuningProfile);
-    
-    if (!tracking) {
-      setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
-    }
+    manuallyUpdatePose();
   });
+
   showDebugInfoInput?.addEventListener("change", () => {
     setDebugInfoVisible(showDebugInfoInput.checked);
     writeShowDebugInfoPreference(showDebugInfoInput.checked);
