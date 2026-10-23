@@ -3389,7 +3389,9 @@ function saveImportedAvatar() {
   }
 }
 
-/// Format a head rotation offset value (pitch, yaw, roll) for display.
+/**
+ * Format a head rotation offset value (pitch, yaw, roll) for display.
+ */
 function formatHeadRotationValue(value: number): string {
   return value >= 0 ? `+${value}` : `${value}`;
 }
