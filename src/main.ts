@@ -385,24 +385,14 @@ const oneEuroSmoothingInput = document.querySelector<HTMLInputElement>(
 const oneEuroSmoothingValueEl = document.querySelector<HTMLOutputElement>(
   "#one-euro-smoothing-value",
 );
-const headRotationOffsetPitchInput = document.querySelector<HTMLOutputElement>(
-  "#head-rot-pitch-offset",
-);
-const headRotationOffsetPitchValueEl = document.querySelector<HTMLOutputElement>(
-  "#head-rot-pitch-offset-value",
-);
-const headRotationOffsetRollInput = document.querySelector<HTMLOutputElement>(
-  "#head-rot-roll-offset",
-);
-const headRotationOffsetRollValueEl = document.querySelector<HTMLOutputElement>(
-  "#head-rot-roll-offset-value",
-);
-const headRotationOffsetYawInput = document.querySelector<HTMLOutputElement>(
-  "#head-rot-yaw-offset",
-);
-const headRotationOffsetYawValueEl = document.querySelector<HTMLOutputElement>(
-  "#head-rot-yaw-offset-value",
-);
+const HEAD_ROTATION_AXES = ["pitch", "roll", "yaw"] as const;
+const headRotationOffsetControls = HEAD_ROTATION_AXES.map((axis) => ({
+  axis,
+  input: document.querySelector<HTMLInputElement>(`#head-rot-${axis}-offset`),
+  valueEl: document.querySelector<HTMLOutputElement>(
+    `#head-rot-${axis}-offset-value`,
+  ),
+}));
 const showDebugInfoInput =
   document.querySelector<HTMLInputElement>("#show-debug-info");
 const advancedDebugInfoEl = document.querySelector<HTMLElement>(
@@ -740,7 +730,7 @@ function setAvatarPose(expressionIndex: number, headRotation: HeadRotation) {
   avatarScene.setHeadRotation({
     pitch: headRotation.pitch + tuningProfile.headRotationOffset.pitch,
     roll: headRotation.roll + tuningProfile.headRotationOffset.roll,
-    yaw: headRotation.yaw + tuningProfile.headRotationOffset.yaw
+    yaw: headRotation.yaw + tuningProfile.headRotationOffset.yaw,
   });
 }
 
@@ -1048,28 +1038,12 @@ function populateTuningControls() {
     applyTuningProfile(tuningProfile);
   });
 
-  // Manually update the 3D avatar's pose, unless tracking is already updating it.
-  const manuallyUpdatePose = () => {
-    if (!tracking) {
-      setAvatarPose(baseExpressionIndex, tuningProfile.headRotationOffset);
-    }
+  for (const { axis, input } of headRotationOffsetControls) {
+    input?.addEventListener("input", () => {
+      tuningProfile.headRotationOffset[axis] = clampNumber(input.valueAsNumber, -45, 45);
+      applyTuningProfile(tuningProfile);
+    });
   }
-
-  headRotationOffsetPitchInput?.addEventListener("input", () => {
-    tuningProfile.headRotationOffset.pitch = parseInt(headRotationOffsetPitchInput.value);
-    applyTuningProfile(tuningProfile);
-    manuallyUpdatePose();
-  });
-  headRotationOffsetRollInput?.addEventListener("input", () => {
-    tuningProfile.headRotationOffset.roll = parseInt(headRotationOffsetRollInput.value);
-    applyTuningProfile(tuningProfile);
-    manuallyUpdatePose();
-  });
-  headRotationOffsetYawInput?.addEventListener("input", () => {
-    tuningProfile.headRotationOffset.yaw = parseInt(headRotationOffsetYawInput.value);
-    applyTuningProfile(tuningProfile);
-    manuallyUpdatePose();
-  });
 
   showDebugInfoInput?.addEventListener("change", () => {
     setDebugInfoVisible(showDebugInfoInput.checked);
@@ -1250,6 +1224,9 @@ function applyTuningProfile(
   expressionPipeline.updateProfile(tuningProfile);
   lipSyncEnvelope.updateOptions(tuningProfile.lipSync);
   renderTuningControls();
+  // Re-apply the current pose so a changed head rotation offset shows up
+  // immediately, even when idle or when tracking has no face to report.
+  setAvatarPose(baseExpressionIndex, currentAvatarPose.headRotation);
   if (options.persist !== false) scheduleTuningProfileSave();
 }
 
@@ -1265,23 +1242,10 @@ function renderTuningControls() {
     minimumHoldMsInput.value = String(tuningProfile.minimumHoldMs);
   }
 
-  if (headRotationOffsetPitchInput) {
-    headRotationOffsetPitchInput.value = String(tuningProfile.headRotationOffset.pitch)
-  }
-  if (headRotationOffsetPitchValueEl) {
-    headRotationOffsetPitchValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.pitch);
-  }
-  if (headRotationOffsetRollInput) {
-    headRotationOffsetRollInput.value = String(tuningProfile.headRotationOffset.roll)
-  }
-  if (headRotationOffsetRollValueEl) {
-    headRotationOffsetRollValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.roll);
-  }
-  if (headRotationOffsetYawInput) {
-    headRotationOffsetYawInput.value = String(tuningProfile.headRotationOffset.yaw)
-  }
-  if (headRotationOffsetYawValueEl) {
-    headRotationOffsetYawValueEl.textContent = formatHeadRotationValue(tuningProfile.headRotationOffset.yaw);
+  for (const { axis, input, valueEl } of headRotationOffsetControls) {
+    const offset = tuningProfile.headRotationOffset[axis];
+    if (input) input.value = String(offset);
+    if (valueEl) valueEl.textContent = formatHeadRotationValue(offset);
   }
 
   micMouthTuningControlEl
