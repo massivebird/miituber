@@ -7,12 +7,12 @@ import {
   type BodyModel,
 } from "ffl.js/helpers/BodyUtilities.js";
 import { attachBodyToCharModel, type AttachedBody } from "./bodyModel";
+import { DEFAULT_SHADING_STYLE, loadShadingMaterials } from "./shadingStyle";
 
 /**
  * In-process Mii thumbnail rendering.
  *
- * Renders the full body with the same FFL.js pipeline the live workspace and
- * clean-output window use, on a throwaway transparent offscreen canvas.
+ * Uses the workspace FFL.js pipeline on a temporary transparent canvas.
  */
 const THUMBNAIL_SIZE = 256;
 
@@ -41,8 +41,11 @@ export async function renderMiiThumbnailDataUrl(
     renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
     renderer.setClearColor(0x000000, 0);
 
-    charModel = await createCharModel(ffl, miiBytes, renderer);
-    attachedBody = await attachBodyToCharModel(charModel);
+    // Thumbnails are cached in the library, so they always use the default
+    // style instead of whatever style was active when they were rendered.
+    const materials = await loadShadingMaterials(DEFAULT_SHADING_STYLE);
+    charModel = await createCharModel(ffl, miiBytes, renderer, materials);
+    attachedBody = await attachBodyToCharModel(charModel, materials);
 
     const scene = new THREE.Scene();
     scene.background = null;

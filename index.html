@@ -110,6 +110,16 @@
               Background color
               <input id="background-color" type="color" value="#e8f0f7" />
             </label>
+            <label class="field">
+              Shading style
+              <select id="shading-style-select">
+                <option value="wiiu" selected>Wii U</option>
+                <option value="switch">Switch</option>
+                <option value="miitomo">Miitomo</option>
+                <option value="3ds">3DS</option>
+                <option value="wii">Wii</option>
+              </select>
+            </label>
             <label class="check">
               <input id="transparent-background" type="checkbox" />
               Transparent background
@@ -135,6 +145,10 @@
                 <option value="30">30</option>
                 <option value="60" selected>60</option>
               </select>
+            </label>
+            <label class="check" title="Mirror head turns, tilts and winks">
+              <input id="mirror-tracking" type="checkbox" />
+              Mirror tracking
             </label>
             <p id="tracking-status" data-tone="idle">Start tracking when you are ready.</p>
             <p class="privacy-note">Camera and microphone stay on your device.</p>
@@ -223,7 +237,7 @@
                 <div class="tuning-section__header">
                   <h3>Smoothing</h3>
                 </div>
-                <span class="hint">Steadies head tracking. Raise it if your Mii looks jittery, lower it if it feels laggy.</span>
+                <span class="hint">Smooths face expression scores. Increase it to reduce rapid changes, or decrease it for a faster response.</span>
                 <div class="filter-controls">
                   <label class="range-field filter-controls__wide">
                     <span>Smoothing</span>
